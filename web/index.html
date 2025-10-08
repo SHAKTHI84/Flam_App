@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flam App - Web Viewer</title>
+    <style>
+      body { font-family: sans-serif; background-color: #242424; color: white; text-align: center; }
+      #app { max-width: 800px; margin: 2rem auto; }
+      img { max-width: 100%; border: 1px solid #555; }
+      #stats { margin-top: 1rem; }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Processed Frame Viewer</h1>
+      <img id="processed-image" src="" alt="Processed Frame" />
+      <div id="stats">
+        <h2>Frame Statistics</h2>
+        <p><strong>Resolution:</strong> <span id="resolution">-</span></p>
+        <p><strong>FPS (Android):</strong> <span id="fps">-</span></p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
