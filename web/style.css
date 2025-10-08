@@ -1,0 +1,13 @@
+:root{
+  --bg:#242424;
+  --panel:#1e1e1e;
+  --accent:#4fc3f7;
+}
+body{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:#fff; margin:0;}
+#app{max-width:900px;margin:2rem auto;padding:1rem}
+#viewer{position:relative;display:inline-block;border:1px solid #444;background:var(--panel);}
+canvas{display:block;max-width:100%;height:auto}
+#overlay{position:absolute;left:8px;top:8px;background:rgba(0,0,0,0.5);padding:6px 8px;border-radius:6px;color:#fff;font-size:14px}
+#overlay div{line-height:1.2}
+h1{margin:0 0 1rem 0;font-weight:600}
+#instructions{margin-top:1rem;color:#ddd;font-size:13px}

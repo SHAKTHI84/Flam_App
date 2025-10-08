@@ -1,26 +1,60 @@
-import '../style.css'; // Optional: if you add a separate CSS file
+import '../style.css';
 
 // --- Configuration ---
-// IMPORTANT: Replace this with the actual path to a sample image you saved from the app.
+// Place a static sample image exported from your Android run into `web/sample-frame.jpg`.
 const sampleImageUrl = './sample-frame.jpg';
-const sampleResolution = '1080x1920';
-const sampleFps = '~15 FPS';
 
 // --- DOM Elements ---
-const app = document.querySelector<HTMLDivElement>('#app')!;
-const processedImage = app.querySelector<HTMLImageElement>('#processed-image')!;
-const resolutionSpan = app.querySelector<HTMLSpanElement>('#resolution')!;
-const fpsSpan = app.querySelector<HTMLSpanElement>('#fps')!;
+const canvas = document.getElementById('processed-canvas') as HTMLCanvasElement;
+const overlayRes = document.getElementById('resolution') as HTMLElement;
+const overlayFps = document.getElementById('fps') as HTMLElement;
+const ctx = canvas.getContext('2d')!;
 
-// --- Main Logic ---
-function main() {
-  // Set the image source
-  processedImage.src = sampleImageUrl;
+let lastTime = performance.now();
+let frameCount = 0;
+let fps = 0;
 
-  // Update the stats text
-  resolutionSpan.textContent = sampleResolution;
-  fpsSpan.textContent = sampleFps;
+function updateFps(now: number) {
+  frameCount++;
+  const elapsed = now - lastTime;
+  if (elapsed >= 1000) {
+    fps = Math.round((frameCount * 1000) / elapsed);
+    frameCount = 0;
+    lastTime = now;
+    overlayFps.textContent = `${fps} FPS`;
+  }
 }
 
-// Run the main function when the DOM is ready
+function drawImageToCanvas(img: HTMLImageElement) {
+  // Resize canvas to match image natural size (but keep css responsive)
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  overlayRes.textContent = `${canvas.width} x ${canvas.height}`;
+}
+
+function main() {
+  const img = new Image();
+  img.src = sampleImageUrl;
+  img.onload = () => {
+    drawImageToCanvas(img);
+    // Start a simple animation loop to update FPS overlay (image is static)
+    function loop(now: number) {
+      updateFps(now);
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  };
+  img.onerror = () => {
+    overlayRes.textContent = 'sample-frame.jpg not found in /web/';
+    overlayFps.textContent = '-';
+    // Draw placeholder
+    ctx.fillStyle = '#333';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#999';
+    ctx.font = '20px sans-serif';
+    ctx.fillText('Place sample-frame.jpg in the web/ folder', 10, 30);
+  };
+}
+
 document.addEventListener('DOMContentLoaded', main);
