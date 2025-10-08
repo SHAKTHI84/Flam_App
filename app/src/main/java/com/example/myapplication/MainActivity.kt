@@ -43,6 +43,10 @@ class MainActivity : AppCompatActivity() {
     private var frontCameraId: String? = null
     private var currentCameraId: String? = null
 
+    // FPS Counter variables
+    private var frameCount = 0
+    private var lastFpsTimestamp = 0L
+
     private val cameraStateCallback = object : CameraDevice.StateCallback() {
         override fun onOpened(camera: CameraDevice) {
             cameraDevice = camera
@@ -66,11 +70,30 @@ class MainActivity : AppCompatActivity() {
         val bytes = ByteArray(buffer.remaining())
         buffer.get(bytes)
 
+        // Log frame processing time
+        val startTime = System.currentTimeMillis()
         val processedBytes = processFrame(image.width, image.height, bytes, plane.rowStride)
+        val endTime = System.currentTimeMillis()
+        Log.d("FrameProcessing", "JNI call took: ${endTime - startTime}ms")
+
         val byteBuffer = ByteBuffer.wrap(processedBytes)
         renderer.updateTexture(byteBuffer, image.width, image.height)
         glSurfaceView.requestRender()
         image.close()
+
+        // Calculate and log FPS
+        frameCount++
+        val currentTime = System.currentTimeMillis()
+        if (lastFpsTimestamp == 0L) {
+            lastFpsTimestamp = currentTime
+        }
+        val elapsedTime = currentTime - lastFpsTimestamp
+        if (elapsedTime >= 1000) {
+            val fps = frameCount / (elapsedTime / 1000.0)
+            Log.d("FPSCounter", "FPS: %.2f".format(fps))
+            frameCount = 0
+            lastFpsTimestamp = currentTime
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
